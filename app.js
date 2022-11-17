@@ -7,11 +7,8 @@ const app = express()
 const PORT = 3000
 const db = require('./models')
 const routes = require('./routes')
-const User = db.User
 // 載入設定檔，要寫在 express-session 以後
 const usePassport = require('./config/passport')
-// 引用 passport，放在文件上方
-const passport = require('passport')
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
@@ -28,59 +25,6 @@ app.use(methodOverride('_method'))
 usePassport(app)
 //引用路由
 app.use(routes)
-
-app.get('/todos/:id', (req, res) => {
-  const id = req.params.id
-  return Todo.findByPk(id)
-    .then(todo => res.render('detail', { todo: todo.toJSON() }))
-    .catch(error => console.log(error))
-})
-
-app.get('/users/login', (req, res) => {
-  res.render('login')
-})
-// 加入 middleware，驗證 reqest 登入狀態
-app.post('/users/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/users/login'
-}))
-
-app.post('/users/login', (req, res) => {
-  res.send('login')
-})
-
-app.get('/users/register', (req, res) => {
-  res.render('register')
-})
-
-app.post('/users/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body
-  User.findOne({ where: { email } }).then(user => {
-    if (user) {
-      console.log('User already exists')
-      return res.render('register', {
-        name,
-        email,
-        password,
-        confirmPassword
-      })
-    }
-    return bcrypt
-      .genSalt(10)
-      .then(salt => bcrypt.hash(password, salt))
-      .then(hash => User.create({
-        name,
-        email,
-        password: hash
-      }))
-      .then(() => res.redirect('/'))
-      .catch(err => console.log(err))
-  })
-})
-
-app.get('/users/logout', (req, res) => {
-  res.send('logout')
-})
 
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`)
