@@ -9,36 +9,37 @@ router.get('/new', (req, res) => {
 })
 // create data
 router.post('/', (req, res) => {
-  const userId = req.user.id
+  const UserId = req.user.id
   const name = req.body.name
-  return Todo.create({name, UserId: userId})
+  return Todo.create({ name, UserId })
     .then(() => res.redirect('/'))
     .catch(error => console.error(error))
 })
 // detail page
 router.get('/:id', (req, res) => {
-  const userId = req.user.id
+  const UserId = req.user.id
   const id = req.params.id
-  return Todo.findOne({ where: { id, userId } })
-    .then(todo => res.render('detail', { todo: todo.toJSON() }))
+  return Todo.findOne({ where: { id, UserId } })
+    .then((todo) => res.render('detail', { todo: todo.toJSON() }))
     .catch(error => console.error(error))
 })
 // edit page
 router.get('/:id/edit', (req, res) => {
-  const userId = req.user.id
+  const UserId = req.user.id
   const id = req.params.id
-  return Todo.findOne({ where: { id, userId } })
+  return Todo.findOne({ where: { id, UserId } })
     .then((todo) => res.render('edit', { todo: todo.toJSON() }))
     .catch(error => console.error(error))
 })
 //edit data
 router.put('/:id', (req, res) => {
-  const userId = req.user
+  const UserId = req.user.id
   const id = req.params.id
-  return Todo.findOne({ where: { id, userId } })
+  const { name, isDone } = req.body
+  return Todo.findOne({ where: { id, UserId } })
     .then((todo) => {
-      todo.toJSON().name = req.body.name
-      todo.toJSON().isDone = req.body.isDone === 'on'
+      todo.name = name
+      todo.isDone = isDone === 'on'
       return todo.save()
     })
     .then(() => res.redirect(`/todos/${id}`))
@@ -46,10 +47,10 @@ router.put('/:id', (req, res) => {
 })
 // delete data
 router.delete('/:id', (req, res) => {
-  const userId = req.user.id
+  const UserId = req.user.id
   const id = req.params.id
-  return Todo.findOne({ where: { id, userId } })
-    .then((todo) => todo.remove())
+  return Todo.findOne({ where: { id, UserId } })
+    .then((todo) => todo.destroy())
     .then(() => res.redirect('/'))
     .catch(error => console.error(error))
 })
