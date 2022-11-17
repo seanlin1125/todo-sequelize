@@ -3,6 +3,7 @@ const router = express.Router()
 const db = require('../../models')
 const User = db.User
 const passport = require('passport')
+const bcrypt = require('bcryptjs')
 
 router.get('/login', (req, res) => {
   res.render('login')
