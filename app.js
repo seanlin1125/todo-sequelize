@@ -13,13 +13,13 @@ if (process.env.NODE_ENV !== 'production') {
 require('./models')
 
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT
 
 app.engine('hbs', engine({ extname: '.hbs' }))
 app.set('view engine', 'hbs')
 
 app.use(session({
-  secret: 'ThisIsMySecret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }))
